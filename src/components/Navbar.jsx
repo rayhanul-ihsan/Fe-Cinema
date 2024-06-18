@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { CiLogout } from "react-icons/ci";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
 import { TOGGLE_POPUP } from "../store/slices/auth";
-import { CiLogout } from "react-icons/ci";
-import SearchComp from "./Search";
 
 const Navbar = () => {
   const isLogin = useSelector((state) => state.auth.session_id);
@@ -13,8 +12,6 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
 
   const handleLogin = () => {
     if (!isLogin) {
@@ -23,8 +20,8 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-      localStorage.removeItem("token");
-      navigate("/");
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   const toggleMenu = () => {
@@ -39,10 +36,6 @@ const Navbar = () => {
             C I N E M A
           </h1>
         </NavLink>
-        <SearchComp
-          isOpen={isSearchOpen}
-          onClose={() => setIsSearchOpen(false)}
-        />
         <div className="md:hidden">
           <button onClick={toggleMenu} className="text-white text-[25px]">
             {isOpen ? <FaTimes /> : <FaBars />}
