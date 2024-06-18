@@ -1,23 +1,22 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTopRated } from "../store/async/movie";
-import CardMovie from "./CardMovie";
+import { getWatchlist } from "../store/async/movie";
+import CardMovie from "./CardMovie";2
 
-const TopRated = () => {
-  const topRatedState = useSelector((state) => state.movie.topRated);
-  const dispatch = useDispatch();
+const WatchlistComp = () => {
+  const watchState = useSelector((state) => state.movie.watchlist);
+  const dispath = useDispatch();
 
   useEffect(() => {
-    dispatch(getTopRated());
+    dispath(getWatchlist());
   }, []);
-
   return (
     <>
-      <h1 className="text-white text-[20px] md:text-[30px] font-semibold mb-5">
-        Top Rated
+      <h1 className="text-white text-[20px] md:text-[30px] font-semibold m-5">
+        Your Watchlist
       </h1>
       <div className="flex flex-wrap justify-center md:justify-normal text-white p-2 items-center gap-4 md:gap-8">
-        {topRatedState.map(({ id, poster_path, title, release_date }) => (
+        {watchState.map(({ id, poster_path, title, release_date }) => (
           <CardMovie
             key={id}
             id={id}
@@ -31,4 +30,4 @@ const TopRated = () => {
   );
 };
 
-export default TopRated;
+export default WatchlistComp;

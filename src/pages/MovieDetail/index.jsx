@@ -1,104 +1,144 @@
-import React, { useState } from "react";
-import Navbar from "../../components/Navbar";
-import ListFilm from "../../components/ListFilm";
-import { card } from "../../moks/card";
+import React, { useEffect } from "react";
+import { CircularProgressbar } from "react-circular-progressbar";
 import { BsDot } from "react-icons/bs";
-import { IoBookmark } from "react-icons/io5";
-import { FaHeart } from "react-icons/fa";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { FaBookmark, FaHeart, FaRegBookmark, FaRegHeart } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import Navbar from "../../components/Navbar";
+import Recommendation from "../../components/Recommendation";
+import useCheckFav from "../../hooks/checkFav";
+import useCheckWatch from "../../hooks/checkWatch";
+import {
+  getDetail,
+  getFavorite,
+  getWatchlist,
+  setFavorite,
+  setWatchlist,
+} from "../../store/async/movie";
+import { TOGGLE_POPUP } from "../../store/slices/auth";
 
 const MovieDetail = () => {
-  const [isBookmarkClicked, setIsBookmarkClicked] = useState(false);
-  const [isHeartClicked, setIsHeartClicked] = useState(false);
+  const { movie_id } = useParams();
+  const isLogin = useSelector((state) => state.auth.session_id);
 
-  const handleBookmarkClick = () => {
-    setIsBookmarkClicked(!isBookmarkClicked);
+  const DetailState = useSelector((state) => state?.movie?.detail);
+  const dispatch = useDispatch();
+
+  const [isWatch] = useCheckWatch(+movie_id);
+  const [isFav] = useCheckFav(+movie_id);
+
+  useEffect(() => {
+    if (movie_id) {
+      dispatch(getDetail(movie_id));
+    }
+  }, [dispatch, movie_id]);
+
+  const handleWatchlistClick = async () => {
+    if (!isLogin) {
+      return dispatch(TOGGLE_POPUP(true));
+    }
+    if (isWatch) {
+      await dispatch(setWatchlist({ id: +movie_id, watchlist: false }));
+    } else {
+      await dispatch(setWatchlist({ id: +movie_id, watchlist: true }));
+    }
+    await dispatch(getWatchlist());
   };
 
-  const handleHeartClick = () => {
-    setIsHeartClicked(!isHeartClicked);
+  const handleFavoriteClick = async () => {
+    if (!isLogin) {
+      return dispatch(TOGGLE_POPUP(true));
+    }
+    if (isFav) {
+      await dispatch(setFavorite({ id: +movie_id, favorite: false }));
+    } else {
+      await dispatch(setFavorite({ id: +movie_id, favorite: true }));
+    }
+
+    await dispatch(getFavorite());
   };
 
   return (
     <>
       <Navbar />
       <div
-        className="relative w-screen h-[500px] flex items-center bg-cover bg-center p-28 gap-8"
-        style={{ backgroundImage: `url('/img3.png')` }}
+        className="relative w-screen h-[500px] flex items-center bg-cover bg-center "
+        style={{
+          backgroundImage: `url(${
+            DetailState.backdrop_path
+              ? `https://image.tmdb.org/t/p/original${DetailState.backdrop_path}`
+              : "/img3.png"
+          })`,
+        }}
       >
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <img
-          src="https://i.ibb.co.com/6WZbJR3/img-2.png"
-          alt="img2"
-          className="relative w-[150px] h-[250px] object-cover"
-        />
-        <div className="relative">
-          <h1 className="text-white text-[30px] font-semibold">
-            Oppenheimer (2023)
-          </h1>
-          <div className="flex items-center mb-4 text-white">
-            <p>07/19/2023</p>
-            <BsDot />
-            <p>Drama, History</p>
-            <BsDot />
-            <p>3h 1m</p>
-          </div>
-          <div className="flex gap-3 items-center">
-            <div className="w-10 h-10 bg-white rounded-full p-1">
-              <CircularProgressbar
-                value={82}
-                text={82}
-                strokeWidth={12}
-                
-                styles={{
-                  background: {
-                    fill: "rgba(0, 0, 0, 0.5)",
-                  },
-                  text:{
-                    fontSize: "3rem",
-                    strokeWidth: "10px",
-                    fontWeight:"bold"
-                  }
-                }}
-              />
+        <div className="absolute inset-0 bg-black opacity-50" />
+        <div className="flex items-center gap-8 container m-auto">
+          {DetailState.poster_path && (
+            <img
+              src={`https://image.tmdb.org/t/p/original${DetailState.poster_path}`}
+              alt="Movie Poster"
+              className="relative w-[150px] h-[250px] object-cover"
+            />
+          )}
+          <div className="relative">
+            <h1 className="text-white text-[30px] font-semibold">
+              {DetailState.title} ({DetailState.release_date?.split("-")[0]})
+            </h1>
+            <div className="flex items-center mb-4 text-white">
+              <p>{DetailState.release_date}</p>
+              <BsDot />
+              <p>{DetailState.genres?.map((genre) => genre.name).join(", ")}</p>
+              <BsDot />
+              <p>
+                {Math.floor(DetailState.runtime / 60)}h{" "}
+                {DetailState.runtime % 60}m
+              </p>
             </div>
-            <p className="text-white text-sm">User <br /> Score</p>
+            <div className="flex gap-3 items-center">
+              <div className="w-10 h-10 bg-white rounded-full p-1">
+                <CircularProgressbar
+                  value={DetailState.vote_average * 10}
+                  text={Math.round(DetailState.vote_average * 10)}
+                  strokeWidth={12}
+                  styles={{
+                    background: {
+                      fill: "rgba(0, 0, 0, 0.5)",
+                    },
+                    text: {
+                      fontSize: "3rem",
+                      strokeWidth: "10px",
+                      fontWeight: "bold",
+                    },
+                  }}
+                />
+              </div>
+              <p className="text-white text-sm">
+                User <br /> Score
+              </p>
 
-            <div
-              onClick={handleBookmarkClick}
-              className={`cursor-pointer hover:text-white ${
-                isBookmarkClicked ? "text-white" : "text-gray-400"
-              }`}
-            >
-              <IoBookmark size={25} />
+              <div onClick={handleWatchlistClick} className="cursor-pointer">
+                {isWatch ? (
+                  <FaBookmark size={25} className="text-white" />
+                ) : (
+                  <FaRegBookmark size={25} className="text-white" />
+                )}
+              </div>
+              <div onClick={handleFavoriteClick} className="cursor-pointer">
+                {isFav ? (
+                  <FaHeart size={25} className="text-white" />
+                ) : (
+                  <FaRegHeart size={25} className="text-white" />
+                )}
+              </div>
             </div>
-            <div
-              onClick={handleHeartClick}
-              className={`cursor-pointer hover:text-white ${
-                isHeartClicked ? "text-white" : "text-gray-400"
-              }`}
-            >
-              <FaHeart size={25} />
-            </div>
+            <p className="text-white italic mt-2">{DetailState.tagline}</p>
+            <h2 className="text-white font-semibold">Overview</h2>
+            <p className="text-white">{DetailState.overview}</p>
           </div>
-          <p className="text-white italic mt-2">The world forever changes.</p>
-          <h2 className="text-white font-semibold">Overview</h2>
-          <p className="text-white">
-            The story of J. Robert Oppenheimer's role in the development of the
-            atomic bomb during World War II.
-          </p>
         </div>
       </div>
-
-      <div className="flex flex-col w-screen h-auto bg-black py-24 px-24">
-        <h1 className="text-white text-[30px] font-extrabold mb-5">
-          Recommendations
-        </h1>
-        <div className="flex flex-nowrap w-[94%] h-[55%] text-white items-center gap-6 mb-14 overflow-x-auto overflow-y-hidden custom-scrollbar">
-          {card.map(({ id, img, title, year }) => (
-            <ListFilm key={id} img={img} title={title} year={year} />
-          ))}
-        </div>
+      <div className="container my-10 mx-auto">
+        <Recommendation />
       </div>
     </>
   );
