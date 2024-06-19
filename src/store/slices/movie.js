@@ -6,6 +6,7 @@ import {
   getRecommendations,
   getTopRated,
   getWatchlist,
+  rateMovie,
   searchMovies,
   setWatchlist,
 } from "../async/movie";
@@ -32,23 +33,33 @@ export const movieSlice = createSlice({
     builder.addCase(getTopRated.fulfilled, (state, action) => {
       state.topRated = action.payload.results;
     });
+
     builder.addCase(getDetail.fulfilled, (state, action) => {
       state.detail = action.payload;
     });
+
     builder.addCase(getRecommendations.fulfilled, (state, action) => {
       state.recommendations = action.payload.results;
     });
+
     builder.addCase(getFavorite.fulfilled, (state, action) => {
       state.favorite = action.payload.results;
     });
+
     builder.addCase(getWatchlist.fulfilled, (state, action) => {
       state.watchlist = action.payload.results;
     });
-    builder.addCase(searchMovies.fulfilled, (state, action) => {
-      // console.log("data search",action.payload)
-      state.search = action.payload.results;
 
-    })
+    builder.addCase(searchMovies.fulfilled, (state, action) => {
+      state.search = action.payload.results;
+    });
+
+    builder.addCase(rateMovie.fulfilled, (state, action) => {
+      const { movie_id, rating } = action.payload;
+      if (state.detail.id === movie_id) {
+        state.detail.userRating = rating;
+      }
+    });
   },
 });
 

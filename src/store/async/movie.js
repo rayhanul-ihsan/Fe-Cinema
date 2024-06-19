@@ -172,3 +172,21 @@ export const searchMovies = createAsyncThunk(
     }
   }
 );
+
+export const rateMovie = createAsyncThunk(
+  "movie/rateMovie",
+  async ({ movie_id, rating }, thunkAPI) => {
+    try {
+      const session_id = thunkAPI.getState().auth.session_id;
+      const response = await axios.post(
+        `https://api.themoviedb.org/3/movie/${movie_id}/rating?session_id=${session_id}`,
+        { value: rating },
+        options
+      );
+      return { movie_id, rating };
+    } catch (error) {
+      console.error("Error rating movie:", error);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);

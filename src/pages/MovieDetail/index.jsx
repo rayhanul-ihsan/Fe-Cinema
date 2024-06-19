@@ -12,6 +12,7 @@ import {
   getDetail,
   getFavorite,
   getWatchlist,
+  rateMovie,
   setFavorite,
   setWatchlist,
 } from "../../store/async/movie";
@@ -56,6 +57,13 @@ const MovieDetail = () => {
     }
 
     await dispatch(getFavorite());
+  };
+
+  const handleRateMovie = async (rating) => {
+    if (!isLogin) {
+      return dispatch(TOGGLE_POPUP(true));
+    }
+    await dispatch(rateMovie({ movie_id: +movie_id, rating }));
   };
 
   return (
@@ -134,6 +142,19 @@ const MovieDetail = () => {
             <p className="text-white italic mt-2">{DetailState.tagline}</p>
             <h2 className="text-white font-semibold">Overview</h2>
             <p className="text-white">{DetailState.overview}</p>
+
+            <div className="mt-4">
+              <h3 className="text-white font-semibold">Rate this movie:</h3>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                <button
+                  key={rating}
+                  onClick={() => handleRateMovie(rating)}
+                  className="px-2 py-1 mx-1 bg-gray-700 text-white rounded"
+                >
+                  {rating}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
