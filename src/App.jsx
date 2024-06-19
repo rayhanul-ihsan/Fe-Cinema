@@ -1,10 +1,11 @@
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import Home from "./pages/Home";
-import Watchlist from "./pages/Watchlist";
-import Favorite from "./pages/Favorite";
-import MovieDetail from "./pages/MovieDetail";
 import { useSelector } from "react-redux";
-import Popup from "./components/PopUp";
+import { Route, Routes } from "react-router-dom";
+import Favorite from "./pages/Favorite";
+import Home from "./pages/Home";
+import MovieDetail from "./pages/MovieDetail";
+import Watchlist from "./pages/Watchlist";
+import Search from "./pages/Search.jsx";
+import Popup from "./components/PopUp.jsx";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Home />}/>
+        <Route path="/search" element={<Search />}/>
         <Route path="/favorite" element={<Favorite />}/>
         <Route path="/watchlist" element={<Watchlist />}/>
         <Route path="/detail/:movie_id" element={<MovieDetail />}/>

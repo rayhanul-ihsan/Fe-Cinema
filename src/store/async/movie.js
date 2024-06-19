@@ -18,7 +18,6 @@ const options = {
 };
 
 const ACCOUNT_ID = import.meta.env.VITE_ACCOUNT_ID;
-const API_KEY = import.meta.env.VITE_API_KEY;
 
 export const getNowPlaying = createAsyncThunk(
   "movie/getNowPlaying",
@@ -151,6 +150,25 @@ export const getWatchlist = createAsyncThunk(
     } catch (error) {
       console.log(error);
       thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const searchMovies = createAsyncThunk(
+  "movie/searchMovies",
+  async (searchQuery, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/search/collection?include_adult=false&language=id-ID&page=1&query=${encodeURIComponent(
+          searchQuery
+        )}`,
+        options
+      );
+      
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );

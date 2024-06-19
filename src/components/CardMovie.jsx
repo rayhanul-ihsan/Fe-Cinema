@@ -14,6 +14,7 @@ import useCheckWatch from "../hooks/checkWatch";
 
 const CardMovie = ({ id, img, title, year }) => {
   const isLogin = useSelector((state) => state.auth.session_id); 
+  // console.log("",isLogin)
   const dispatch = useDispatch();
 
   const [isWatch] = useCheckWatch(id);

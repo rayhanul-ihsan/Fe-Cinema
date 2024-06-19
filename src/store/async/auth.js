@@ -16,7 +16,8 @@ export const getGuestSession = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(url, options);
-      localStorage.setItem("token", import.meta.env.VITE_ACCESS_TOKEN);
+
+      localStorage.setItem("token", response.data.guest_session_id);
       return response.data;
     } catch (error) {
       console.log(error);

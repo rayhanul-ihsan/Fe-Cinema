@@ -6,6 +6,7 @@ import {
   getRecommendations,
   getTopRated,
   getWatchlist,
+  searchMovies,
   setWatchlist,
 } from "../async/movie";
 
@@ -16,6 +17,7 @@ const initialState = {
   recommendations: [],
   favorite: [],
   watchlist: [],
+  search: [],
 };
 
 export const movieSlice = createSlice({
@@ -42,6 +44,11 @@ export const movieSlice = createSlice({
     builder.addCase(getWatchlist.fulfilled, (state, action) => {
       state.watchlist = action.payload.results;
     });
+    builder.addCase(searchMovies.fulfilled, (state, action) => {
+      // console.log("data search",action.payload)
+      state.search = action.payload.results;
+
+    })
   },
 });
 

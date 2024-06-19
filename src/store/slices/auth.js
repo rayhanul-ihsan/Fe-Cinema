@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { deleteGuestSession, getGuestSession } from "../async/auth";
+import { getGuestSession } from "../async/auth";
 
 const initialState = {
   session_id: null,
@@ -13,12 +13,16 @@ const authSlice = createSlice({
     TOGGLE_POPUP: (state, action) => {
       state.show_popup = action.payload;
     },
+    LOGOUT: (state) => {
+      state.session_id = null;
+    },  
   },
   extraReducers: (builder) => {
     builder.addCase(getGuestSession.fulfilled, (state, action) => {
       state.session_id = action.payload.guest_session_id;
     });
+
   },
 });
-export const { TOGGLE_POPUP } = authSlice.actions;
+export const { TOGGLE_POPUP, LOGOUT } = authSlice.actions;
 export default authSlice.reducer;
